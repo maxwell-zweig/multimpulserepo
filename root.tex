@@ -1,0 +1,572 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%2345678901234567890123456789012345678901234567890123456789012345678901234567890
+%        1         2         3         4         5         6         7         8
+
+
+
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf}  % Comment this line out if you need a4paper
+
+%\documentclass[a4paper, 10pt, conference]{ieeeconf}      % Use this line for a4 paper
+
+\IEEEoverridecommandlockouts                              % This command is only needed if 
+                                                          % you want to use the \thanks command
+
+\overrideIEEEmargins                                      % Needed to meet printer requirements.
+
+\title{\LARGE \bf Multi-Impulse Reachability via Pontryagin's Minimum Principle}
+
+\author{Maxwell Zweig$^{1}$ and Damennick Henry$^{2}$}% <-this % stops a space
+
+\bibliographystyle{IEEEtran}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+
+\begin{document}
+
+
+
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{abstract}
+Within the astrodynamics community, satellite reachability has been well-studied under a variety of control authorities and assumptions. However, limited attention has been given to algorithms for computing multi-impulse reachable sets, which may serve as higher-fidelity models of satellite capabilities than the already well-studied single-impulse case. To this end, we first provide a PMP-sufficiency proof for optimal impulsive linear systems that generalizes the proof given by Prussing. Then we sample the NC to produce the multi-impulse reachable set on linear and non-linear test cases. 
+\end{abstract}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{INTRODUCTION}
+Due to its applications to safety analysis, the reachability problem has been well-studied within and outside of the aerospace engineering community. Modern approaches to reachability often involve approaches such as set-propagation or Taylor polynomial methods, and are often tailored to high-dimensional systems for which the curse-of-dimensionality presents difficulties \cite{althoff2021, leguernic2010}. Recent applications of these techniques within the astrodynamics community include \cite{foss2026reachability, zhou2025single}. Recently, a variety of PMP-based methods for computing continuous thrust reachable sets have been studied within the aerospace community, often being tested on linearized or non-linear two-body relative motion dynamics \cite{lee2018reachable, gong2020pursuit, natherson-2-2024}. Within the context of spacecraft operations, reachability studies have largely focused on continuous thrust sets, and while significant attention has been given to single-impulse reachable sets, comparably little attention has been given to the case of an arbitrary number of impulses occurring freely during the flight time. 
+
+In this work, a novel algorithm for computing multi-impulse reachable sets is presented and is tested on linearized and full non-linear two-body relative motion dynamics. To facilitate the development of the algorithm, a proof that the PMP defines sufficient conditions for optimal control of an impulsive linear system with convex constraints and a convex objective function of the terminal state and delta-v is given. This proof is a direct generalization of the proof given in \cite{Prussing1995}, which focuses explictly on minimum-fuel rendezvous. 
+
+
+
+
+\section{Background}
+
+
+
+We show that Prussing's Sufficiency Proof can be generalized to arbitrary convex objectives of the terminal state and delta-v usage. 
+
+
+\section{MATH}
+
+
+
+\subsection{Generalized Pontryagin's Minimum Prinicple}
+We show that the geometric PMP stated in \cite{Bonnans2008} defines a sufficient condition for optimality for smooth convex functions of the terminal state and for convex terminal constraint sets, when the impulses are applied according to the classic primer vector theory under linear dynamics. 
+
+For a terminal-cost problem ($f^0 \equiv 0$), assuming no abnormal 
+minimizers so that $p^0 = -1$, the Hamiltonian is
+\begin{equation}
+    H(\boldsymbol{x}, \boldsymbol{p}, \boldsymbol{u}) 
+    = \langle \boldsymbol{p}, \boldsymbol{f}(\boldsymbol{x}, \boldsymbol{u}) \rangle.
+\end{equation}
+If $\boldsymbol{u}^*(\cdot)$ is optimal on $[0,T]$, there exists an 
+absolutely continuous costate $\boldsymbol{p}(\cdot)$ such that
+\begin{equation}
+    \dot{\boldsymbol{x}} = \frac{\partial H}{\partial \boldsymbol{p}}, 
+    \qquad 
+    \dot{\boldsymbol{p}} = -\frac{\partial H}{\partial \boldsymbol{x}},
+\end{equation}
+\begin{equation}
+    H(\boldsymbol{x}^*(t), \boldsymbol{p}(t), \boldsymbol{u}^*(t)) 
+    = \max_{\boldsymbol{w} \in \Omega} H(\boldsymbol{x}^*(t), \boldsymbol{p}(t), \boldsymbol{w}),
+\end{equation}
+\begin{equation}
+    \boldsymbol{p}(0) \perp T_{\boldsymbol{x}(0)} M_0,
+    \qquad
+    \boldsymbol{p}(T) + \frac{\partial g^0}{\partial \boldsymbol{x}}(T, \boldsymbol{x}(T)) 
+    \perp T_{\boldsymbol{x}(T)} M_1,
+\end{equation}
+almost everywhere on $[0,T]$.
+
+\subsection{Sufficient Condition for Optimality} 
+Assume that the state contains three position and three velocity components, and evolves linearly.  Consider the directionally-constrained terminal position norm maximization: \begin{equation} \underset{ \{  \Delta \boldsymbol{v}_i, t_i  \}}{\text{max}} \alpha \boldsymbol{e}^T\boldsymbol{r}_f : \\ (\boldsymbol{I}_3 - \boldsymbol{e e}^T)\boldsymbol{r}_f = \boldsymbol{0}_3, \sum_{i=1}^N  \| \Delta \boldsymbol{v}_i \| \leq F \label{eqn:controlproblem}\end{equation} Assume there exists a costate trajectory \(\boldsymbol{\lambda}(t)\) and multiplier \(\boldsymbol{\nu}\) satisfying the necessary conditions (NC) from Pontryagin's Maximum Principle (PMP):
+\begin{equation}
+\begin{gathered}
+\boldsymbol{\lambda}_r^\top(t_f)
+=
+\alpha \boldsymbol{e}^\top
++
+\boldsymbol{\nu}^\top
+\left(\boldsymbol{I}_3-\boldsymbol{e}\boldsymbol{e}^\top\right),
+\qquad
+\boldsymbol{\lambda}_v^\top(t_f)=\boldsymbol{0}_3^\top,\\
+\left\|\boldsymbol{\lambda}_v(t_k)\right\|=\ell,
+\qquad
+\Delta\boldsymbol{v}_k
+=
+\gamma\,\boldsymbol{\lambda}_v(t_k),
+\qquad
+\left\|\boldsymbol{\lambda}_v(t)\right\|\leq\ell.
+\end{gathered}
+\label{eq:NC}
+\end{equation}
+The proof will proceed by providing a global upper-bound on the objective function $J(\{ \Delta \boldsymbol{v}_i, t_i \})$ for any admissible delta-v sequence, and then showing that this upper-bound is attained when the impulses are applied according to the NC. The proof proceeds mechanistically in a similar manner to \cite{Prussing1995}. In terms of the unforced initial-state $\boldsymbol{r}_0^f$, the objective may be written as \[
+J(\{\Delta \boldsymbol{v}_i, t_i\}) = \alpha \boldsymbol{e}^T\boldsymbol{r}_0^f + \alpha \boldsymbol{e}^T\sum_{i=1}^N \Phi_{\boldsymbol{v}}^{\boldsymbol{r}}(t_f, t_i) \Delta \boldsymbol{v}_i
+\] Using the relation \[\boldsymbol{\lambda_v}^T(t_i) = \boldsymbol{\lambda_r}^T(t_f) \boldsymbol{\Phi_v^r}(t_f, t_i)\]
+and applying Eq.~\eqref{eq:NC}, \begin{align}J(\{\Delta \boldsymbol{v}_i, t_i\}) &=  \alpha \boldsymbol{e^T r_0^f} + \sum_{i = 1}^N \boldsymbol{\lambda_v}^T(t_i) \Delta \boldsymbol{v}_i \nonumber \\ &\quad - \sum_{i=1}^N \boldsymbol{\nu}^T(\boldsymbol{I_3} - \boldsymbol{ee}^T)\boldsymbol{\Phi_v^r}(t_f, t_i) \Delta \boldsymbol{v}_i \label{eq:intermediate} \end{align} Since $\{\Delta \boldsymbol{v}_i, t_i \}$ is admissible, \[ \boldsymbol{\nu}^T(\boldsymbol{I}_3 - \boldsymbol{e e^T})(\boldsymbol{r}_0^f +\sum_{i=1}^N \Phi_{\boldsymbol{v}}^{\boldsymbol{r}}(t_f, t_i) \Delta \boldsymbol{v}_i )= 0    \] and it follows that \[ -\sum_{i=1}^N \boldsymbol{\nu}^T(\boldsymbol{I}_3 - \boldsymbol{e e^T}) \Phi_{\boldsymbol{v}}^{\boldsymbol{r}}(t_f, t_i) \Delta \boldsymbol{v}_i ) = \boldsymbol{\nu}^T(\boldsymbol{I}_3 - \boldsymbol{e e^T})\boldsymbol{r}_0^f \]
+As a result, Eq.~\eqref{eq:intermediate} may be rewritten as \begin{align}
+    J(\{\Delta \boldsymbol{v}_i, t_i\}) &= (\alpha \boldsymbol{e}^T + \boldsymbol{\nu}^T(\boldsymbol{I}_3 - \boldsymbol{ee}^T)\boldsymbol{r}_0^f \nonumber \\ &\quad + \sum_{i=1}^N\boldsymbol{\lambda_v}^T(t_i) \Delta\boldsymbol{v}_i \nonumber \\ 
+    \quad &\leq (\alpha \boldsymbol{e}^T + \boldsymbol{\nu}^T(\boldsymbol{I}_3 - \boldsymbol{ee}^T)\boldsymbol{r}_0^f + \ell F
+\end{align} Equality in this upper bound is attained when the impulse times and directions are applied according to the NC, and the impulse magnitudes sum to the delta-v limit $F$. This proves that the primer vector theory give a sufficient condition for the directionally constrained terminal position norm maximization, and also proves that all available delta-v must be utilized to get to the edge of the reachable set. Further, this proof provides a scalar condition that should be satisfied along an optimal trajectory. For simplicity, assume that $\boldsymbol{r}_0^f = \boldsymbol{0}_3$, or that the system starts at the origin. Then \[\alpha \boldsymbol{e}^T\boldsymbol{r}_f = \ell F\] must be satisfied along the optimal trajectory. It can be seen from the position costate transversality condition that $\boldsymbol{\lambda_r}^T(t_f)\boldsymbol{e} = \alpha$, and so \begin{equation}
+    \boldsymbol{\lambda_r}^T(t_f)\boldsymbol{e e^T}\boldsymbol{r}_f = \ell F
+\end{equation} must hold along the optimal trajectory. Numerical experiments confirm this relation, and the proof. 
+
+
+
+
+
+
+\subsection{Generalized Sufficient Condition} 
+
+
+\begin{proof}
+Consider the necessary conditions for optimality in the impulsive case:
+\[
+\|\lambda_v\| \leq \lambda_g,
+\]
+with
+\[
+\|\lambda_v\| = \lambda_g
+\]
+at each impulse, together with the transversality condition
+\[
+-(\begin{pmatrix}
+\lambda_r \\ \lambda_v \\ \lambda_g
+\end{pmatrix}
++
+\frac{\partial F}{\partial x})
+\perp T_{x(T)}\mathcal{C}.
+\] Since the terminal constraint set is a smoooth manifold whose tangent space at a point is a linear space, this is an alternate formulation of the NC. 
+
+Suppose that \(F\) is convex and differentiable. Consider a candidate
+terminal position \(z^*\) obtained upon applying the necessary conditions.
+We will show that
+\[
+F(z) \geq F(z^*)
+\]
+for every terminal state \(z\) associated with an arbitrary impulsive
+policy.
+
+Since \(F\) is convex and differentiable, it has the supporting-hyperplane
+property
+\[
+F(z)-F(z^*)
+\geq
+\nabla F(z^*)^T(z-z^*).
+\]
+
+Writing
+\[
+z=(x_f,J),
+\qquad
+z^*=(x_f^*,J^*),
+\]
+we obtain
+\[
+F(x_f,J)-F(x_f^*,J^*)
+\geq
+g_x^T(x_f-x_f^*)+g_J(J-J^*),
+\]
+where
+\[
+\nabla F=
+\begin{pmatrix}
+g_x\\
+g_J
+\end{pmatrix}.
+\]
+
+Now consider the normal cone \(N_{\mathcal C}(z^*)\) 
+\[
+N_{\mathcal C}(z^*)
+=
+\left\{
+n:n^T(z-z^*)\leq 0
+\quad
+\forall z\in\mathcal C
+\right\}.
+\]
+
+For
+\[
+n=
+\begin{pmatrix}
+n_x\\
+n_J
+\end{pmatrix}
+\in N_{\mathcal C}(z^*),
+\]
+we therefore have
+\[
+n_x^T(x_f-x_f^*)+n_J(J-J^*)\leq 0.
+\]
+
+Hence,
+\[
+\begin{aligned}
+&F(x_f,J)-F(x_f^*,J^*)\\
+&\geq
+g_x^T(x_f-x_f^*)+g_J(J-J^*)\\
+&\qquad
++n_x^T(x_f-x_f^*)+n_J(J-J^*)\\
+&=
+(g_x+n_x)^T(x_f-x_f^*)
++
+(g_J+n_J)(J-J^*).
+\end{aligned}
+\]
+
+Now suppose that the impulses are applied according to multipliers
+\[
+(\lambda_r,\lambda_v,\lambda_g)
+\]
+such that
+\[
+\|\lambda_v\|\leq \lambda_g,
+\]
+with equality at each impulse, and
+\[
+\begin{pmatrix}
+\lambda_r^T & \lambda_v^T 
+\end{pmatrix}^{T} (t_j)
+=
+\begin{pmatrix}
+\lambda_r^T & \lambda_v^T
+\end{pmatrix}^{T}(t_f) \Phi(t_f, t_j).
+\]
+
+By Lemma (1), since
+\[
+n_x\in N_{\mathcal C}(z^*),
+\]
+and, for a smooth convex embedded manifold without boundary,
+\[
+N_{\mathcal C}(z^*)
+=
+T_{\mathcal C}(z^*)^\perp,
+\]
+ we may choose the multipliers such that
+\[
+\begin{pmatrix}
+\lambda_r\\
+\lambda_v\\
+\lambda_g
+\end{pmatrix}(t_f)
+=
+-
+\begin{pmatrix}
+g_x\\
+g_J
+\end{pmatrix}
+-
+\begin{pmatrix}
+n_x\\
+n_J
+\end{pmatrix}.
+\]
+
+In other words,
+\[
+\nabla_{x_f}F+n_x=-\lambda_x,
+\qquad
+g_J+n_J=-\lambda_g.
+\]
+
+Therefore,
+\[
+\begin{aligned}
+&\nabla F(z^*)^T(z-z^*)
++n^T(z-z^*)\\
+&=
+(\nabla F(z^*)+n)^T(z-z^*)\\
+&=
+(g_x+n_x)^T(x_f-x_f^*)
++
+(g_J+n_J)(J-J^*)\\
+&=
+-\lambda_x^T(x_f-x_f^*)
+-
+\lambda_g^T(J-J^*).
+\end{aligned}
+\]
+
+Using the impulsive state variation,
+\[
+x_f-x_f^*
+=
+\sum_{i=1}^{N}
+B\Phi(t_f,t_i)\Delta v_i
+-
+\sum_{j=1}^{N^*}
+B\Phi(t_f,t_j^*)\Delta v_j^*,
+\]
+we have
+\[
+\begin{aligned}
+&-\lambda_x^T(x_f-x_f^*)\\
+&=
+-\lambda_x^T
+\left[
+\sum_{i=1}^{N}
+B\Phi(t_f,t_i)\Delta v_i
+-
+\sum_{j=1}^{N^*}
+B\Phi(t_f,t_j^*)\Delta v_j^*
+\right]\\
+&=
+-\left[
+\sum_{i=1}^{N}
+\lambda_v(t_i)^T\Delta v_i
+-
+\sum_{j=1}^{N^*}
+\lambda_v(t_j^*)^T\Delta v_j^*
+\right].
+\end{aligned}
+\]
+
+Thus
+\[
+\begin{aligned}
+&(\nabla F(z^*)+n)^T(z-z^*)\\
+&=
+-\left[
+\sum_{i=1}^{N}
+\lambda_v(t_i)^T\Delta v_i
+-
+\sum_{j=1}^{N^*}
+\lambda_v(t_j^*)^T\Delta v_j^*
+\right]\\
+&\quad -\lambda_g(J-J^*).
+\end{aligned}
+\]
+
+For the candidate policy, the switching condition gives
+\[
+\lambda_v(t_j^*)^T\Delta v_j^*
+=
+\lambda_g\|\Delta v_j^*\|,
+\]
+and therefore
+\[
+\begin{aligned}
+&(\nabla F(z^*)+n)^T(z-z^*)\\
+&=
+-
+\sum_{i=1}^{N}\lambda_v(t_i)^T\Delta v_i
++\lambda_g (J_0 - J^*)
+-\lambda_g(J-J^*)\\
+&=
+-
+\sum_{i=1}^{N}\lambda_v(t_i)^T\Delta v_i
+-\lambda_g J + \lambda_g J_0.
+\end{aligned}
+\]
+
+Since
+\[
+\|\lambda_v(t_i)\|\leq \lambda_g,
+\]
+Cauchy--Schwarz gives
+\[
+-\lambda_v(t_i)^T\Delta v_i
+\geq
+-\|\lambda_v(t_i)\|\,\|\Delta v_i\|
+\geq
+-\lambda_g\|\Delta v_i\|.
+\]
+
+Consequently,
+\[
+\begin{aligned}
+&(\nabla F(z^*)+n)^T(z-z^*)\\
+&\geq
+-\lambda_g
+(J_0 - J)
+-\lambda_g J. + \lambda_g J_0 = 0 
+\end{aligned}
+\]
+So finally, 
+\[
+F(z) - F(z^*) \geq 0
+\]
+
+
+\end{proof}
+
+
+
+
+
+
+
+\section{Methodology}
+
+To compute the boundary of the reachable set, a sampling-based variant of the terminal direction method documented by Natherson et al. \cite{natherson2024} is employed. The control problem given in Eq.~\eqref{eq:optimization-constraints-thrust} is posed: 
+\begin{align}
+\label{eq:optimization-constraints-thrust}
+\underset{\{\Delta\mathbf{v}_i,t_i\}}{\text{maximize}}
+\quad
+& \delta\mathbf{r}_f^T\delta\mathbf{r}_f
+\\
+\text{subject to}\quad
+& \mathbf{x}(t_0)=
+  \begin{bmatrix}
+    \mathbf{0}_3^T &
+    \mathbf{0}_3^T &
+    J_0
+  \end{bmatrix}^T,
+  \nonumber\\
+& \sum_{i=1}^{N}
+  \left\lVert\Delta\mathbf{v}_i\right\rVert
+  =\Delta v_{\max},
+  \nonumber\\
+& \dot{\mathbf{x}}(t)=
+  \begin{bmatrix}
+    \mathbf{F}\bigl(\mathbf{x}_{1:6}(t)\bigr)\\
+    0
+  \end{bmatrix},
+  \qquad t\neq t_i,
+  \nonumber\\
+& \mathbf{x}(t_i^+)=\mathbf{x}(t_i^-)
+  +
+  \begin{bmatrix}
+    \mathbf{0}_3\\
+    \Delta\mathbf{v}_i\\
+    -\left\lVert\Delta\mathbf{v}_i\right\rVert
+  \end{bmatrix},
+  \nonumber\\
+& \quad i=1,\ldots,N,
+,
+  \nonumber\\
+& \left(
+    \mathbf{I}_{3\times3}
+    -
+    \hat{\delta\boldsymbol{r}}\,
+    \hat{\delta\boldsymbol{r}}^T
+  \right)
+  \delta\boldsymbol{r}_f
+  =\mathbf{0}_3.
+\end{align}
+
+Application of Pontryagin's Minimum principle yields a two-point-boundary-value-problem (TPBVP) in terms of the adjoint system, with terminal conditions such that the terminal position costate is free and the terminal velocity costate must be equal to $\mathbf{0}_3$ (natural boundary conditions). 
+\begin{equation}
+\dot{\boldsymbol{\lambda}}(t)
+=
+-
+\left[
+\frac{\partial \mathbf{F}}
+     {\partial \mathbf{x}}
+\bigl(\mathbf{x}(t)\bigr)
+\right]^T
+\boldsymbol{\lambda}(t),
+\qquad t\neq t_i.
+\end{equation}
+
+Two methods were explored for solving the resulting TPBVP: continuation in the thrust-magnitude and angular $\hat{\delta\boldsymbol{r}}$ variables, and a partial solve of the NC and resulting sampling. Both procedures are documented in this section; however the reachable sets presented here made use of the sampling based method. 
+
+\subsection{Continuation}
+Continuation methods for computing optimal-impulse trajectories and reachable sets have been explored in the literature. Our maximum thrust-magnitude continuation scheme is similar to that of 
+
+
+
+
+
+\subsection{Sampling}
+
+
+
+
+
+\section{Numerical Example}
+For a chief spacecraft on a circular orbit of radius $\alpha$, the full nonlinear two-body relative motion equations between impulses are
+\begin{equation}
+\begin{aligned}
+    \ddot{x} &= -\frac{\mu(\alpha+x)}{R^3} + \frac{\mu}{\alpha^2}
+                 + 2n\dot{y} + n^2x,\\
+    \ddot{y} &= -2n\dot{x} + n^2y - \frac{\mu y}{R^3},\\
+    \ddot{z} &= -\frac{\mu z}{R^3},
+\end{aligned}
+\label{eq:nonlinear-relative-motion}
+\end{equation}
+where $x$, $y$, and $z$ are the deputy's radial, along-track, and cross-track coordinates in the chief-centered rotating frame, $R=\sqrt{(\alpha+x)^2+y^2+z^2}$ is the deputy's distance from the central body, $\mu$ is the gravitational parameter, and $n=\sqrt{\mu/\alpha^3}$ is the chief's mean motion. For separations small compared with $\alpha$, the linearized model is given by the Hill--Clohessy--Wiltshire (HCW) equations:
+\begin{equation}
+\begin{aligned}
+    \ddot{x} &= 2n\dot{y} + 3n^2x,\\
+    \ddot{y} &= -2n\dot{x},\\
+    \ddot{z} &= -n^2z.
+\end{aligned}
+\label{eq:hcw-relative-motion}
+\end{equation}
+Both models describe unforced motion between impulses; each impulse produces the velocity jump specified in the methodology.
+
+For all the numerical examples presented here, the parameters taken where in the case where $\alpha = 7 780 000$ meters, $\mu = 3.986 \times 10^{14}$ yielding a mean motion parameter of $n = 0.00092003 s^-1$ or an orbital period of approximately $113$ minutes. The sample reachable sets presented here are for $2 \Pi$ canonical time units, or a single orbital period.
+
+
+Figure~\ref{fig:2pi-linear} shows an example of the reachable set for linear dynamics.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\columnwidth]{2pilinear.png}
+    \caption{Multi impulse reachable set for linear dynamics, projected onto the $x$--$y$ plane (left) and the $y$--$z$ plane (right).}
+    \label{fig:2pi-linear}
+\end{figure}
+
+Figure~\ref{fig:2pi-nonlinear} shows the corresponding example for nonlinear dynamics.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\columnwidth]{2pinonlinear.png}
+    \caption{Multi impulse reachable set for nonlinear dynamics, projected onto the $x$--$y$ plane (left) and the $y$--$z$ plane (right).}
+    \label{fig:2pi-nonlinear}
+\end{figure}
+
+
+
+\section{CONCLUSIONS}
+We have designed a sampling-based algorithm for computation of multi-impulse reachable sets. The algorithm was tested on linear and non-linear two-body relative motion equations. We have demonstrated that the algorithm is computationally tractable for linear systems with three position and three velocity variables, as well as for non-linear systems for which a limited number of impulses are required. To facilitate our studies, first we proved an analog to Prussing's sufficiency result that is specific to our case, and then we extended Prussing's sufficiency proof to impulsive linear systems with convex terminal objectives and constraint sets. Finally, we presented numerical examples of the multi-impulse reachable set, comparing them to  
+
+\addtolength{\textheight}{-12cm}   % This command serves to balance the column lengths
+                                  % on the last page of the document manually. It shortens
+                                  % the textheight of the last page by a suitable amount.
+                                  % This command does not take effect until the next page
+                                  % so it should come on the page before the last. Make
+                                  % sure that you do not shorten the textheight too much.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{APPENDIX}
+
+Appendixes should appear before the acknowledgment.
+
+\section*{ACKNOWLEDGMENT}
+
+The preferred spelling of the word ÒacknowledgmentÓ in America is without an ÒeÓ after the ÒgÓ. Avoid the stilted expression, ÒOne of us (R. B. G.) thanks . . .Ó  Instead, try ÒR. B. G. thanksÓ. Put sponsor acknowledgments in the unnumbered footnote on the first page.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+References are important to the reader; therefore, each citation must be complete and correct. If at all possible, references should be commonly available publications.
+
+
+
+\bibliography{citations}
+
+
+\end{document}
